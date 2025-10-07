@@ -1,0 +1,310 @@
+# VeriShare Project .gitignore
+
+# ---------------------------
+# Node / JavaScript
+# ---------------------------
+backend/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ---------------------------
+# Environment files / Secrets
+# ---------------------------
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ---------------------------
+# Logs
+# ---------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ---------------------------
+# IDEs and Editors
+# ---------------------------
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.iml
+
+# ---------------------------
+# OS files
+# ---------------------------
+.DS_Store
+Thumbs.db
+
+# ---------------------------
+# Testing / Coverage
+# ---------------------------
+coverage/
+lcov-report/
+
+# ---------------------------
+# Temporary / Cache
+# ---------------------------
+tmp/
+temp/
+.cache/
+
+# ---------------------------
+# Docker
+# ---------------------------
+docker-compose.override.yml
+
+# ---------------------------
+# Build outputs (root & subprojects)
+# ---------------------------
+dist/
+out/
+.next/
+build/
+**/build/
+
+# ---------------------------
+# Flutter / Dart
+# ---------------------------
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+.dart_tool/
+
+# ---------------------------
+# Android / iOS (mobile)
+# ---------------------------
+android/local.properties
+android/.gradle/
+.gradle/
+**/android/*.keystore
+**/ios/Pods/
+ios/Pods/
+# Xcode
+DerivedData/
+*.xcworkspace
+*.xcuserstate
+
+# Google/Firebase service files (often contain secrets)
+**/android/google-services.json
+**/ios/GoogleService-Info.plist
+
+# ---------------------------
+# Credentials & keys
+# ---------------------------
+*.pem
+*.key
+*.p12
+*.jks
+*.cer
+*.crt
+*.p8
+*.mobileprovision
+
+# ---------------------------
+# GitHub Actions / CI/CD
+# ---------------------------
+# Workflow artifacts
+.github/workflows/*.log
+.github/ISSUE_TEMPLATE/
+.github/PULL_REQUEST_TEMPLATE/
+
+# Dependency cache
+.npm
+.yarn-integrity
+.pnpm-store/
+
+# ---------------------------
+# Docker
+# ---------------------------
+docker-compose.override.yml
+.env.docker
+docker/data/
+docker/volumes/
+*.tar.gz
+
+# ---------------------------
+# Blockchain
+# ---------------------------
+**/data/
+**/logs/
+*.db
+*.ldb
+blockchain/data/
+blockchain/logs/
+
+# ---------------------------
+# Additional OS files
+# ---------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Windows
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ---------------------------
+# IDEs and Editors (additional)
+# ---------------------------
+.history/
+.ionide/
+.project
+.metadata
+.classpath
+.c9/
+*.launch
+.settings/
+.vscode/settings.json
+.vscode/tasks.json
+.idea/workspace.xml
+.idea/tasks.xml
+*.sublime-project
+*.sublime-workspace
+
+# ---------------------------
+# Package Managers
+# ---------------------------
+.yarn-integrity
+.pnpm-store/
+.pnpm/
+.yarn/
+.cache/yarn/
+.cache/pnpm/
+
+# ---------------------------
+# Testing / Coverage (additional)
+# ---------------------------
+.nyc_output/
+.coverage/
+coverage.lcov
+.clover/
+test-results/
+playwright-report/
+test-results.xml
+allure-results/
+
+# ---------------------------
+# Build outputs (additional)
+# ---------------------------
+.parcel-cache/
+.turbo/
+.vercel/
+.netlify/
+.firebase/
+.firestore/
+functions/.firebase/
+public/_redirects
+public/_headers
+
+# Flutter specific
+**/android/app/build/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/build/
+**/build/ios/
+**/build/android/
+**/linux/build/
+**/macos/build/
+**/windows/build/
+**/web/build/
+
+# Next.js specific
+.next/
+out/
+.nextjs/
+
+# ---------------------------
+# Temporary / Cache (additional)
+# ---------------------------
+.tmp/
+.temp/
+.swc/
+.eslintcache
+.stylelintcache
+.prettiercache
+.tscache/
+*.tsbuildinfo
+
+# ---------------------------
+# Database files
+# ---------------------------
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.rdb
+dump.rdb
+
+# ---------------------------
+# Logs (additional)
+# ---------------------------
+pids/
+*.pid
+*.seed
+*.pid.lock
+logs/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ---------------------------
+# Runtime data
+# ---------------------------
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ---------------------------
+# Miscellaneous
+# ---------------------------
+# Local Netlify folder
+.netlify
+# Vercel
+.vercel
+# Firebase
+.firebase/
+.firestore/
+# Sentry Config File
+.sentryclirc
+# Storybook build outputs
+.out
+.storybook-out

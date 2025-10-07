@@ -1,0 +1,194 @@
+{
+  "default": true,
+  "MD001": true,
+  "MD002": true,
+  "MD003": {
+    "style": "atx"
+  },
+  "MD004": {
+    "style": "dash"
+  },
+  "MD005": true,
+  "MD006": true,
+  "MD007": {
+    "indent": 2
+  },
+  "MD008": true,
+  "MD009": {
+    "br_spaces": 2,
+    "list_item_empty_lines": false
+  },
+  "MD010": true,
+  "MD011": true,
+  "MD012": true,
+  "MD013": {
+    "line_length": 120,
+    "heading_line_length": 80,
+    "code_blocks": false,
+    "tables": false
+  },
+  "MD014": true,
+  "MD015": true,
+  "MD016": true,
+  "MD017": true,
+  "MD018": true,
+  "MD019": true,
+  "MD020": true,
+  "MD021": true,
+  "MD022": true,
+  "MD023": true,
+  "MD024": {
+    "allow_different_nesting": true
+  },
+  "MD025": {
+    "level": 1
+  },
+  "MD026": {
+    "punctuation": ".,;:!"
+  },
+  "MD027": true,
+  "MD028": true,
+  "MD029": {
+    "style": "ordered"
+  },
+  "MD030": {
+    "ul_single": 1,
+    "ol_single": 1,
+    "ul_multi": 1,
+    "ol_multi": 1
+  },
+  "MD031": {
+    "list_items": true
+  },
+  "MD032": true,
+  "MD033": {
+    "allowed_elements": [
+      "br",
+      "code",
+      "details",
+      "summary",
+      "kbd",
+      "sub",
+      "sup",
+      "var",
+      "samp",
+      "cite",
+      "q",
+      "abbr",
+      "acronym"
+    ]
+  },
+  "MD034": true,
+  "MD035": {
+    "style": "---"
+  },
+  "MD036": true,
+  "MD037": true,
+  "MD038": true,
+  "MD039": true,
+  "MD040": true,
+  "MD041": false,
+  "MD042": true,
+  "MD043": {
+    "headings": [
+      "# Project Title",
+      "## Overview",
+      "### Features",
+      "#### Subfeatures",
+      "### Installation",
+      "### Usage",
+      "### API",
+      "### Contributing",
+      "### License"
+    ]
+  },
+  "MD044": {
+    "names": [
+      "JavaScript",
+      "TypeScript",
+      "Node.js",
+      "React",
+      "Next.js",
+      "Flutter",
+      "Dart",
+      "MongoDB",
+      "Redis",
+      "Docker",
+      "Kubernetes",
+      "GitHub",
+      "GitHub Actions",
+      "CI/CD",
+      "API",
+      "GraphQL",
+      "REST",
+      "JWT",
+      "OAuth",
+      "SSL",
+      "TLS",
+      "HTTP",
+      "HTTPS",
+      "JSON",
+      "YAML",
+      "Markdown",
+      "HTML",
+      "CSS",
+      "SCSS",
+      "SASS",
+      "ESLint",
+      "Prettier",
+      "Jest",
+      "Cypress",
+      "Testing Library",
+      "Flutter Test",
+      "Blockchain",
+      "Smart Contracts",
+      "Web3",
+      "Ethereum",
+      "Solidity",
+      "VeriShare",
+      "credential",
+      "credentials",
+      "verification",
+      "verifiable credentials",
+      "digital wallet",
+      "QR code",
+      "biometric",
+      "authentication",
+      "authorization",
+      "encryption",
+      "decryption",
+      "hashing",
+      "signature",
+      "certificate",
+      "trust",
+      "audit",
+      "compliance",
+      "organization",
+      "issuer",
+      "holder",
+      "verifier"
+    ],
+    "code_blocks": false
+  },
+  "MD045": true,
+  "MD046": {
+    "style": "fenced"
+  },
+  "MD047": true,
+  "MD048": {
+    "style": "backtick"
+  },
+  "MD049": {
+    "style": "asterisk"
+  },
+  "MD050": {
+    "style": "asterisk"
+  },
+  "MD051": true,
+  "MD052": true,
+  "MD053": true,
+  "MD054": true,
+  "MD055": true,
+  "MD056": true,
+  "MD057": true
+}
