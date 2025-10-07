@@ -1,10 +1,10 @@
-# 🏛️ VeriShare Platform
+# VeriShare Platform
 
 > **Secure Credential Verification Ecosystem** - A comprehensive platform for digital credential management, verification, and trust relationships
 
 VeriShare is a decentralized platform that enables organizations to onboard, verify credentials, and manage trust relationships through a secure blockchain-powered ecosystem. The platform provides seamless integration between web portals, mobile applications, and blockchain services for end-to-end credential lifecycle management.
 
-## 🎯 Overview
+## Overview
 
 VeriShare implements **Phase 3** of the credential verification roadmap, featuring:
 
@@ -142,7 +142,7 @@ cd mobile && flutter run
 - **GraphQL Playground**: [http://localhost:5000/graphql](http://localhost:5000/graphql)
 - **Mobile App**: Runs on connected device/emulator
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -204,7 +204,7 @@ flutter test integration_test/
 
 This project uses GitHub Actions for comprehensive CI/CD with the following workflows:
 
-### 🔄 Continuous Integration (`ci.yml`)
+### Continuous Integration (`ci.yml`)
 
 - **Triggers**: Push/PR to `main`/`develop` branches
 - **Backend**: Node.js linting, testing, building
@@ -215,7 +215,7 @@ This project uses GitHub Actions for comprehensive CI/CD with the following work
 - **Docker**: Multi-stage builds with caching
 - **Deployment**: Automated staging deployment
 
-### 🚀 Production Deployment (`deploy.yml`)
+### Production Deployment (`deploy.yml`)
 
 - **Triggers**: GitHub releases or manual dispatch
 - **Features**: Multi-environment support (staging/production)
@@ -224,7 +224,7 @@ This project uses GitHub Actions for comprehensive CI/CD with the following work
 - **Rollback**: Automatic rollback on deployment failure
 - **Notifications**: Slack integration for deployment status
 
-### ✨ Code Quality (`quality.yml`)
+### Code Quality (`quality.yml`)
 
 - **Triggers**: All PRs and pushes
 - **Linting**: ESLint, Prettier, Flutter analyze
@@ -233,7 +233,7 @@ This project uses GitHub Actions for comprehensive CI/CD with the following work
 - **Performance**: Lighthouse CI for frontend performance metrics
 - **Quality Gates**: Blocks merges if quality standards aren't met
 
-### 🐳 Local Development with Docker
+### Local Development with Docker
 
 Use Docker Compose for full local development environment:
 
@@ -251,13 +251,13 @@ docker-compose down
 docker-compose up --build
 ```
 
-### 🔧 Environment Setup
+### Environment Setup
 
 1. **Development**: Use `docker-compose.yml` for local development
 2. **Staging**: Automatic deployment on pushes to `main`
 3. **Production**: Manual deployment via release or workflow dispatch
 
-### 📊 Pipeline Features
+### Pipeline Features
 
 - **Parallel Jobs**: All components tested simultaneously
 - **Caching**: Node modules, Flutter packages, Docker layers

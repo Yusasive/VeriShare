@@ -140,7 +140,7 @@ npm run lint
 npm run type-check
 ```
 
-## 🔗 API Integration
+## API Integration
 
 ### Backend Connection
 

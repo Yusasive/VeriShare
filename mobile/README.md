@@ -1,4 +1,4 @@
-# 📱 VeriShare Mobile App
+# VeriShare Mobile App
 
 > **Flutter Credential Management** - Mobile application for secure digital credential management and verification
 
@@ -317,7 +317,7 @@ jobs:
       - run: flutter build apk --release
 ```
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -388,7 +388,7 @@ flavors:
 - [Mobile UI Guidelines](./docs/UI_GUIDELINES.md)
 - [Testing Strategy](./docs/TESTING.md)
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
