@@ -1,0 +1,52 @@
+openapi: 3.0.3
+info:
+  title: VeriShare API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+paths:
+  /api/auth/register:
+    post:
+      summary: Register wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [address, publicKey, encryptedPrivateKey, authSecretHash]
+              properties:
+                address: { type: string }
+                publicKey: { type: string }
+                encryptedPrivateKey: { type: string }
+                authSecretHash: { type: string }
+      responses:
+        '201': { description: Registered }
+  /api/blockchain/credential/store:
+    post:
+      summary: Store credential anchor
+      responses:
+        '201': { description: Created }
+  /api/consent/token:
+    post:
+      summary: Issue QR/access token (org auth)
+      responses:
+        '201': { description: Token created }
+  /api/organization/apply:
+    post:
+      summary: Submit org verification application (auth)
+      responses:
+        '201': { description: Submitted }
+  /api/organization/review:
+    post:
+      summary: Review org application (admin)
+      responses:
+        '200': { description: Reviewed }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

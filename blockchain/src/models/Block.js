@@ -7,22 +7,30 @@ class Block {
     transactions,
     previousHash = "",
     nonce = 0,
-    difficulty = 2
+    difficulty = 2,
+    parents = null
   ) {
     this.index = index;
     this.timestamp = timestamp;
     this.transactions = transactions;
-    this.previousHash = previousHash;
+    this.previousHash = previousHash; // primary parent (compat)
+    this.parents = Array.isArray(parents) && parents.length ? parents : (previousHash ? [previousHash] : []);
     this.nonce = nonce;
     this.difficulty = difficulty;
     this.hash = this.calculateHash();
+  }
+
+  parentRoot() {
+    const list = [...this.parents];
+    list.sort();
+    return list.join('|');
   }
 
   calculateHash() {
     return crypto
       .SHA256(
         this.index +
-          this.previousHash +
+          this.parentRoot() +
           this.timestamp +
           JSON.stringify(this.transactions) +
           this.nonce +

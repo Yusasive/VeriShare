@@ -1,0 +1,142 @@
+{
+  "info": {
+    "name": "VeriShare Backend API",
+    "_postman_id": "7f9aa380-2f3f-4da8-a225-b210f896874c",
+    "description": "Postman collection documenting the VeriShare backend REST API backed by the BlockDAG credential network.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": { "major": 1, "minor": 1, "patch": 0 }
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/", "host": ["{{baseUrl}}"] } },
+          "response": []
+        },
+        {
+          "name": "Service Health",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] } },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Wallet",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": \"addr_owner1234567890abc\",\n  \"publicKey\": \"04abcdef...hex\",\n  \"encryptedPrivateKey\": \"base64blob\",\n  \"authSecretHash\": \"sha256:...\",\n  \"recoveryEmail\": \"user@example.com\",\n  \"recoveryPhone\": \"+123456789\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Challenge",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"address\": \"addr_owner1234567890abc\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/challenge", "host": ["{{baseUrl}}"], "path": ["api", "auth", "challenge"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Signature",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"address\": \"addr_owner1234567890abc\",\n  \"signature\": \"<DER-HEX-SIGNATURE-OF-SHA256(NONCE)>\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/verify", "host": ["{{baseUrl}}"], "path": ["api", "auth", "verify"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Blockchain",
+      "item": [
+        { "name": "Node Info", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/info", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "info"] } }, "response": [] },
+        { "name": "Full Chain", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/chain", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "chain"] } }, "response": [] },
+        { "name": "Pending Transactions", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/transactions/pending", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "transactions", "pending"] } }, "response": [] },
+        { "name": "Create Transaction", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"fromAddress\": \"04abcdef...publickeyhex\",\n  \"toAddress\": \"04fedcba...publickeyhex\",\n  \"amount\": 1,\n  \"data\": null,\n  \"type\": \"transfer\",\n  \"signature\": \"DER-HEX\",\n  \"timestamp\": 1700000000000\n}" }, "url": { "raw": "{{baseUrl}}/api/blockchain/transaction", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "transaction"] } }, "response": [] },
+        { "name": "Mine Pending Transactions", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"rewardAddress\": \"04abcdef...publickeyhex\"\n}" }, "url": { "raw": "{{baseUrl}}/api/blockchain/mine", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "mine"] } }, "response": [] },
+        { "name": "Address Balance", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/address/{{address}}/balance", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "address", "{{address}}", "balance"], "variable": [{ "key": "address", "value": "04abcdef...publickeyhexowner" }] } }, "response": [] },
+        { "name": "Generate Address", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/address/generate", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "address", "generate"] } }, "response": [] }
+      ]
+    },
+    {
+      "name": "Credentials",
+      "item": [
+        { "name": "Store Credential", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"ownerAddress\": \"addr_owner1234567890abc\",\n  \"credentialHash\": \"hash_sha256_abcd1234\",\n  \"metadata\": {\n    \"type\": \"student_id\",\n    \"institution\": \"VeriShare University\",\n    \"issuedAt\": \"2024-01-01T00:00:00.000Z\"\n  },\n  \"ipfsContentBase64\": \"<base64 of encrypted blob>\",\n  \"transactionSignature\": \"DER-HEX\",\n  \"transactionTimestamp\": 1700000000000\n}" }, "url": { "raw": "{{baseUrl}}/api/blockchain/credential/store", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "credential", "store"] } }, "response": [] },
+        { "name": "Verify Credential", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/credential/verify/{{credentialId}}/{{ownerAddress}}", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "credential", "verify", "{{credentialId}}", "{{ownerAddress}}"], "variable": [{ "key": "credentialId", "value": "cred_1234567890abcdef" }, { "key": "ownerAddress", "value": "04abcdef...publickeyhexowner" }] } }, "response": [] },
+        { "name": "Share Credential", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"credentialId\": \"cred_1234567890abcdef\",\n  \"fromAddress\": \"addr_owner1234567890abc\",\n  \"toAddress\": \"addr_verifier123456789\",\n  \"expiryHours\": 24,\n  \"transactionSignature\": \"DER-HEX\",\n  \"transactionTimestamp\": 1700000000000\n}" }, "url": { "raw": "{{baseUrl}}/api/blockchain/credential/share", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "credential", "share"] } }, "response": [] },
+        { "name": "Share Details", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/credential/share/{{shareId}}", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "credential", "share", "{{shareId}}"], "variable": [{ "key": "shareId", "value": "share_1234567890abcdef" }] } }, "response": [] },
+        { "name": "Verify Share Access", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/credential/share/{{shareId}}/{{requestingAddress}}", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "credential", "share", "{{shareId}}", "{{requestingAddress}}"], "variable": [{ "key": "shareId", "value": "share_1234567890abcdef" }, { "key": "requestingAddress", "value": "04fedcba...publickeyhexverifier" }] } }, "response": [] },
+        { "name": "Shares For Address", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/credential/shares/{{address}}", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "credential", "shares", "{{address}}"], "variable": [{ "key": "address", "value": "04abcdef...publickeyhexowner" }] } }, "response": [] },
+        { "name": "Revoke Credential", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"credentialId\": \"cred_1234567890abcdef\",\n  \"ownerAddress\": \"addr_owner1234567890abc\",\n  \"transactionSignature\": \"DER-HEX\",\n  \"transactionTimestamp\": 1700000000000\n}" }, "url": { "raw": "{{baseUrl}}/api/blockchain/credential/revoke", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "credential", "revoke"] } }, "response": [] },
+        { "name": "List Credentials", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/credentials?ownerAddress={{ownerAddress}}&status=active", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "credentials"], "query": [{ "key": "ownerAddress", "value": "04abcdef...publickeyhexowner" }, { "key": "status", "value": "active", "disabled": true }, { "key": "limit", "value": "50", "disabled": true }] } }, "response": [] },
+        { "name": "Credentials By Owner", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/credentials/{{ownerAddress}}", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "credentials", "{{ownerAddress}}"], "variable": [{ "key": "ownerAddress", "value": "04abcdef...publickeyhexowner" }] } }, "response": [] }
+      ]
+    },
+    {
+      "name": "Consent",
+      "item": [
+        { "name": "Create Request", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"credentialId\": \"cred_1234567890abcdef\",\n  \"ownerAddress\": \"addr_owner1234567890abc\",\n  \"organizationAddress\": \"addr_org1234567890abc\",\n  \"requestedData\": [\"fullName\", \"dob\"],\n  \"expiresInHours\": 24\n}" }, "url": { "raw": "{{baseUrl}}/api/consent/request", "host": ["{{baseUrl}}"], "path": ["api", "consent", "request"] } }, "response": [] },
+        { "name": "Approve Decision", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"requestId\": \"<fill-from-create>\",\n  \"ownerAddress\": \"addr_owner1234567890abc\",\n  \"decision\": \"approved\"\n}" }, "url": { "raw": "{{baseUrl}}/api/consent/decision", "host": ["{{baseUrl}}"], "path": ["api", "consent", "decision"] } }, "response": [] },
+        { "name": "Deny Decision", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"requestId\": \"<fill-from-create>\",\n  \"ownerAddress\": \"addr_owner1234567890abc\",\n  \"decision\": \"denied\",\n  \"reason\": \"not comfortable\"\n}" }, "url": { "raw": "{{baseUrl}}/api/consent/decision", "host": ["{{baseUrl}}"], "path": ["api", "consent", "decision"] } }, "response": [] },
+        { "name": "Get By ID", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/consent/id/{{requestId}}", "host": ["{{baseUrl}}"], "path": ["api", "consent", "id", "{{requestId}}"], "variable": [{ "key": "requestId", "value": "<fill>" }] } }, "response": [] },
+        { "name": "List by Owner", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/consent/owner/{{ownerAddress}}", "host": ["{{baseUrl}}"], "path": ["api", "consent", "owner", "{{ownerAddress}}"], "variable": [{ "key": "ownerAddress", "value": "04abcdef...publickeyhexowner" }] } }, "response": [] },
+        { "name": "List by Organization", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/consent/org/{{organizationAddress}}", "host": ["{{baseUrl}}"], "path": ["api", "consent", "org", "{{organizationAddress}}"], "variable": [{ "key": "organizationAddress", "value": "addr_org1234567890abc" }] } }, "response": [] }
+      ]
+    },
+    {
+      "name": "Compliance",
+      "item": [
+        { "name": "Generate Report", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/compliance/report?ownerAddress={{ownerAddress}}&periodStart=2025-01-01&periodEnd=2025-12-31", "host": ["{{baseUrl}}"], "path": ["api", "compliance", "report"], "query": [{ "key": "ownerAddress", "value": "04abcdef...publickeyhexowner" }, { "key": "periodStart", "value": "2025-01-01" }, { "key": "periodEnd", "value": "2025-12-31" }] } }, "response": [] }
+      ]
+    },
+    {
+      "name": "Organizations",
+      "item": [
+        { "name": "Verify Organization", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"orgAddress\": \"addr_org1234567890abcd\",\n  \"metadata\": {\n    \"name\": \"VeriShare Labs\",\n    \"domain\": \"verisharelabs.org\"\n  }\n}" }, "url": { "raw": "{{baseUrl}}/api/blockchain/organization/verify", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "organization", "verify"] } }, "response": [] },
+        { "name": "List Organizations", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/organizations?verified=true", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "organizations"], "query": [{ "key": "verified", "value": "true", "disabled": true }, { "key": "limit", "value": "100", "disabled": true }] } }, "response": [] },
+        { "name": "Verify Status", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/organization/verify/{{orgAddress}}", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "organization", "verify", "{{orgAddress}}"], "variable": [{ "key": "orgAddress", "value": "04a1b2c3...publickeyhexorg" }] } }, "response": [] }
+      ]
+    },
+    {
+      "name": "Audit",
+      "item": [
+        { "name": "Audit Trail", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/audit/{{address}}", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "audit", "{{address}}"], "variable": [{ "key": "address", "value": "04abcdef...publickeyhexowner" }] } }, "response": [] }
+      ]
+    },
+    {
+      "name": "Network",
+      "item": [
+        { "name": "Register Nodes", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"nodes\": [\n    \"http://127.0.0.1:6001\",\n    \"http://127.0.0.1:6002\"\n  ]\n}" }, "url": { "raw": "{{baseUrl}}/api/blockchain/nodes/register", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "nodes", "register"] } }, "response": [] },
+        { "name": "List Nodes", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/nodes", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "nodes"] } }, "response": [] },
+        { "name": "Resolve Consensus", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/api/blockchain/consensus", "host": ["{{baseUrl}}"], "path": ["api", "blockchain", "consensus"] } }, "response": [] }
+      ]
+    }
+  ]
+}

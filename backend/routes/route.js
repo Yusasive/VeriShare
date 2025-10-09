@@ -1,1 +1,1 @@
-routes
+// Route index placeholder (no implementation)

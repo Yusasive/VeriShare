@@ -3,43 +3,122 @@ const CredentialContract = require("../contracts/CredentialContract");
 const Transaction = require("../models/Transaction");
 
 class BlockchainService {
-  constructor() {
+  constructor({ enableP2P = false } = {}) {
     this.dag = new BlockDAG();
     this.credentialContract = new CredentialContract();
     this.nodes = new Set();
     this.nodeAddress = this.generateNodeAddress();
+    this.p2p = null;
+
+    // Apply transactions to contract state when blocks are accepted
+    this.dag.addBlockListener((block) => this.applyBlock(block));
+
+    if (enableP2P) {
+      const P2P = require("../network/P2P");
+      this.p2p = new P2P(this.dag);
+      this.p2p.start();
+    }
   }
 
   generateNodeAddress() {
     return "node_" + Math.random().toString(36).substr(2, 9);
   }
 
+  // Generate an address as uncompressed secp256k1 public key hex (starts with 04, 130 chars)
+  generateAddress() {
+    const { ec: EC } = require("elliptic");
+    const ec = new EC("secp256k1");
+    const kp = ec.genKeyPair();
+    return kp.getPublic("hex");
+  }
+
+  validateAddress(address) {
+    return typeof address === "string" && /^04[0-9a-fA-F]{128}$/.test(address);
+  }
+
   // Transaction methods
-  createTransaction(
+  createTransaction({
     fromAddress,
     toAddress,
     amount,
     data = null,
-    type = "transfer"
-  ) {
-    const transaction = new Transaction(
+    type = "transfer",
+    timestamp = Date.now(),
+    signature = null,
+    nonce = 0,
+    fee = 0,
+  }) {
+    return new Transaction(
       fromAddress,
       toAddress,
       amount,
       data,
-      type
+      type,
+      timestamp,
+      signature,
+      nonce,
+      fee
     );
-    return transaction;
   }
 
   addTransaction(transaction) {
     this.dag.addTransaction(transaction);
+    if (this.p2p) this.p2p.announceTx(transaction);
     return transaction;
   }
 
-  minePendingTransactions(miningRewardAddress) {
-    const block = this.dag.minePendingTransactions(miningRewardAddress);
+  getPendingTransactions() {
+    return this.dag.getPendingTransactions();
+  }
+
+  async minePendingTransactions(miningRewardAddress) {
+    const block = await this.dag.minePendingTransactions(miningRewardAddress);
+    if (this.p2p) this.p2p.announceBlock(block);
     return block;
+  }
+
+  clearPendingTransactions() {
+    this.dag.clearPendingTransactions();
+  }
+
+  // Apply a block's transactions to contract state
+  applyBlock(block) {
+    if (!block || !Array.isArray(block.transactions)) return;
+    for (const tx of block.transactions) {
+      try {
+        switch (tx.type) {
+          case 'credential_store': {
+            const { credentialHash, metadata = {} } = tx.data || {};
+            if (tx.fromAddress && credentialHash) {
+              this.credentialContract.storeCredential(tx.fromAddress, credentialHash, metadata);
+            }
+            break;
+          }
+          case 'credential_share': {
+            const { credentialId, expiryHours = 24 } = tx.data || {};
+            if (credentialId && tx.fromAddress && tx.toAddress) {
+              this.credentialContract.shareCredential(credentialId, tx.fromAddress, tx.toAddress, Number(expiryHours) || 24);
+            }
+            break;
+          }
+          case 'credential_revoke': {
+            const { credentialId } = tx.data || {};
+            if (credentialId && tx.fromAddress) {
+              this.credentialContract.revokeCredential(credentialId, tx.fromAddress);
+            }
+            break;
+          }
+          case 'organization_verify': {
+            if (tx.toAddress) {
+              this.credentialContract.verifyOrganization(tx.toAddress);
+            }
+            break;
+          }
+          default:
+            break;
+        }
+      } catch (_) {}
+    }
   }
 
   // Credential contract methods
@@ -84,6 +163,18 @@ class BlockchainService {
     return this.credentialContract.getCredentialsByOwner(ownerAddress);
   }
 
+  getShare(shareId) {
+    return this.credentialContract.getShare(shareId);
+  }
+
+  getSharesForAddress(address) {
+    return this.credentialContract.getSharesForAddress(address);
+  }
+
+  verifyShareAccess(shareId, requestingAddress) {
+    return this.credentialContract.verifyShareAccess(shareId, requestingAddress);
+  }
+
   // Blockchain info methods
   getChain() {
     return this.dag.chain;
@@ -116,18 +207,10 @@ class BlockchainService {
 
   // Consensus methods
   resolveConflicts() {
-    // Simplified consensus - in real implementation would compare chain lengths
     return this.dag.isChainValid();
   }
 
-  // Utility methods
-  generateAddress() {
-    return "addr_" + Math.random().toString(36).substr(2, 16);
-  }
-
-  validateAddress(address) {
-    return address.startsWith("addr_") && address.length === 22;
-  }
+  // Utility methods kept above: generateAddress() and validateAddress()
 }
 
 module.exports = BlockchainService;

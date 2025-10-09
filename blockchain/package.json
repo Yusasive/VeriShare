@@ -19,6 +19,7 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "dotenv": "^17.2.3",
+    "elliptic": "^6.5.4",
     "leveldown": "^6.1.1",
     "levelup": "^5.1.1",
     "node-crypto": "^1.0.0",

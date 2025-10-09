@@ -35,8 +35,19 @@ Setup instructions for the backend module.
 
 The server will start on `http://localhost:5000` by default.
 
+## Configuration
+
+Environment variables:
+- MONGO_URI or DATABASE_URL: Mongo connection
+- JWT_SECRET, JWT_EXPIRES_IN: Auth token settings
+- CORS_ORIGIN: CORS allowed origins (CSV or "*")
+- ADMIN_ADDRESSES: CSV of admin wallet addresses (uncompressed secp256k1 public keys)
+- IPFS_API_URL, IPFS_API_KEY: Optional for credential IPFS anchoring
+
 ## API Endpoints
 
-- `GET /` - Health check endpoint returning a welcome message.
-
-More endpoints will be added as the API is developed.
+See docs/API_SPEC.md for the full list, and interactive docs at /docs when server is running.
+- Blockchain credential store/share/revoke and organization verification (admin-only)
+- Consent requests and the new QR/token flow for verified organizations
+- Organization apply/review endpoints for the developer portal
+- Compliance report (owner-authenticated)

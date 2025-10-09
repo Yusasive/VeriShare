@@ -1,30 +1,69 @@
 const crypto = require("crypto-js");
+const DB = require("../storage/db");
 
 class CredentialContract {
   constructor() {
-    this.credentials = new Map(); // address -> credential data hash
+    this.credentials = new Map();
     this.verifiedOrganizations = new Set();
     this.auditLog = [];
+    this.shares = new Map();
+
+    // Initialize lightweight persistence
+    const dbPath = process.env.CONTRACT_DB_PATH || "./data/contract.db";
+    this.db = new DB(dbPath);
+    this._loaded = false;
+    this._init();
   }
 
-  // Store encrypted credential hash on blockchain
+  async _init() {
+    try {
+      const creds = await this.db.getJSON("contract:credentials", []);
+      const orgs = await this.db.getJSON("contract:orgs", []);
+      const shares = await this.db.getJSON("contract:shares", []);
+      const audit = await this.db.getJSON("contract:audit", []);
+      this.credentials = new Map((creds || []).map((c) => [c.id, c]));
+      this.verifiedOrganizations = new Set(orgs || []);
+      this.shares = new Map((shares || []).map((s) => [s.id, s]));
+      this.auditLog = audit || [];
+    } catch (e) {
+      // ignore
+    }
+    this._loaded = true;
+  }
+
+  _persist() {
+    const creds = Array.from(this.credentials.values());
+    const orgs = Array.from(this.verifiedOrganizations.values());
+    const shares = Array.from(this.shares.values());
+    const audit = this.auditLog;
+    this.db.putJSON("contract:credentials", creds).catch(() => {});
+    this.db.putJSON("contract:orgs", orgs).catch(() => {});
+    this.db.putJSON("contract:shares", shares).catch(() => {});
+    this.db.putJSON("contract:audit", audit).catch(() => {});
+  }
+
+  // Store encrypted credential hash on blockchain (idempotent)
   storeCredential(ownerAddress, credentialHash, metadata = {}) {
     const credentialId = crypto
-      .SHA256(ownerAddress + credentialHash + Date.now())
+      .SHA256(ownerAddress + credentialHash)
       .toString();
 
-    const credential = {
-      id: credentialId,
-      owner: ownerAddress,
-      hash: credentialHash,
-      metadata: metadata,
-      timestamp: Date.now(),
-      status: "active",
-    };
+    if (!this.credentials.has(credentialId)) {
+      const credential = {
+        id: credentialId,
+        owner: ownerAddress,
+        hash: credentialHash,
+        metadata: metadata,
+        timestamp: Date.now(),
+        status: "active",
+      };
+      this.credentials.set(credentialId, credential);
+    } else {
+      // merge metadata
+      const existing = this.credentials.get(credentialId);
+      existing.metadata = { ...(existing.metadata || {}), ...(metadata || {}) };
+    }
 
-    this.credentials.set(credentialId, credential);
-
-    // Log audit event
     this.auditLog.push({
       type: "credential_stored",
       credentialId: credentialId,
@@ -32,6 +71,7 @@ class CredentialContract {
       timestamp: Date.now(),
     });
 
+    this._persist();
     return credentialId;
   }
 
@@ -75,7 +115,8 @@ class CredentialContract {
       createdAt: Date.now(),
     };
 
-    // Log audit event
+    this.shares.set(shareId, share);
+
     this.auditLog.push({
       type: "credential_shared",
       shareId: shareId,
@@ -85,6 +126,7 @@ class CredentialContract {
       timestamp: Date.now(),
     });
 
+    this._persist();
     return share;
   }
 
@@ -98,6 +140,7 @@ class CredentialContract {
       timestamp: Date.now(),
     });
 
+    this._persist();
     return true;
   }
 
@@ -122,6 +165,7 @@ class CredentialContract {
       timestamp: Date.now(),
     });
 
+    this._persist();
     return true;
   }
 
@@ -139,7 +183,7 @@ class CredentialContract {
   // Get all credentials for an address
   getCredentialsByOwner(ownerAddress) {
     const credentials = [];
-    for (const [id, credential] of this.credentials) {
+    for (const credential of this.credentials.values()) {
       if (credential.owner === ownerAddress) {
         credentials.push(credential);
       }
@@ -147,14 +191,53 @@ class CredentialContract {
     return credentials;
   }
 
+  getShare(shareId) {
+    return this.shares.get(shareId) || null;
+  }
+
+  getSharesForAddress(address) {
+    return Array.from(this.shares.values()).filter(
+      (share) => share.fromAddress === address || share.toAddress === address
+    );
+  }
+
+  pruneExpiredShares() {
+    const now = Date.now();
+    for (const share of this.shares.values()) {
+      if (share.status === "active" && share.expiryTime <= now) {
+        share.status = "expired";
+        this.auditLog.push({
+          type: "credential_share_expired",
+          shareId: share.id,
+          credentialId: share.credentialId,
+          timestamp: now,
+        });
+      }
+    }
+    this._persist();
+  }
+
   // Verify share access
   verifyShareAccess(shareId, requestingAddress) {
-    // In a real implementation, shares would be stored on-chain
-    // For now, return a mock response
+    this.pruneExpiredShares();
+    const share = this.shares.get(shareId);
+    if (!share) {
+      return { valid: false, reason: "Share not found" };
+    }
+
+    if (share.status !== "active") {
+      return { valid: false, reason: "Share is no longer active" };
+    }
+
+    if (share.toAddress !== requestingAddress) {
+      return { valid: false, reason: "Unauthorized requester" };
+    }
+
     return {
       valid: true,
-      shareId: shareId,
-      requestingAddress: requestingAddress,
+      shareId: share.id,
+      credentialId: share.credentialId,
+      expiresAt: share.expiryTime,
     };
   }
 }
