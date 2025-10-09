@@ -58,7 +58,10 @@ router.post("/transaction", async (req, res, next) => {
       return badRequest(res, "Recipient address is required");
     }
 
-    if (fromAddress !== null && (typeof fromAddress !== "string" || !fromAddress.trim())) {
+    if (
+      fromAddress !== null &&
+      (typeof fromAddress !== "string" || !fromAddress.trim())
+    ) {
       return badRequest(res, "Sender address is required unless null");
     }
 
@@ -82,7 +85,10 @@ router.post("/transaction", async (req, res, next) => {
     }
 
     if (fromAddress && !/^04[0-9a-fA-F]{128}$/.test(fromAddress)) {
-      return badRequest(res, "fromAddress must be uncompressed secp256k1 public key hex (130 chars starting with 04)");
+      return badRequest(
+        res,
+        "fromAddress must be uncompressed secp256k1 public key hex (130 chars starting with 04)"
+      );
     }
 
     if (fromAddress && !/^([0-9a-fA-F]{2})+$/.test(signature)) {
@@ -95,7 +101,10 @@ router.post("/transaction", async (req, res, next) => {
       const doc = await AddressState.findOne({ address: fromAddress });
       const last = doc?.lastNonce ?? -1;
       if (numericNonce <= last) {
-        return badRequest(res, `nonce must be greater than lastNonce (${last}) for address`);
+        return badRequest(
+          res,
+          `nonce must be greater than lastNonce (${last}) for address`
+        );
       }
     }
 
@@ -119,13 +128,19 @@ router.post("/transaction", async (req, res, next) => {
     try {
       storedTransaction = blockchainService.addTransaction(transaction);
     } catch (e) {
-      return res.status(400).json({ error: e.message || "Invalid transaction" });
+      return res
+        .status(400)
+        .json({ error: e.message || "Invalid transaction" });
     }
 
     if (fromAddress) {
       await AddressState.findOneAndUpdate(
         { address: fromAddress },
-        { address: fromAddress, lastNonce: numericNonce, updatedAt: new Date() },
+        {
+          address: fromAddress,
+          lastNonce: numericNonce,
+          updatedAt: new Date(),
+        },
         { upsert: true, new: true }
       );
     }
@@ -180,15 +195,25 @@ router.post("/credential/store", async (req, res, next) => {
       return badRequest(res, "Owner address is required");
     }
     if (!/^04[0-9a-fA-F]{128}$/.test(ownerAddress)) {
-      return badRequest(res, "ownerAddress must be uncompressed secp256k1 public key hex");
+      return badRequest(
+        res,
+        "ownerAddress must be uncompressed secp256k1 public key hex"
+      );
     }
 
     if (typeof credentialHash !== "string" || !credentialHash.trim()) {
       return badRequest(res, "Credential hash is required");
     }
 
-    if (!transactionSignature || !transactionTimestamp || typeof nonce === 'undefined') {
-      return badRequest(res, "transactionSignature, transactionTimestamp and nonce are required");
+    if (
+      !transactionSignature ||
+      !transactionTimestamp ||
+      typeof nonce === "undefined"
+    ) {
+      return badRequest(
+        res,
+        "transactionSignature, transactionTimestamp and nonce are required"
+      );
     }
 
     const extendedMetadata = { ...metadata };
@@ -230,7 +255,9 @@ router.post("/credential/store", async (req, res, next) => {
 
     // Pre-compute deterministic credentialId for client reference
     const { createHash } = require("crypto");
-    const credentialId = createHash("sha256").update(ownerAddress + credentialHash).digest("hex");
+    const credentialId = createHash("sha256")
+      .update(ownerAddress + credentialHash)
+      .digest("hex");
 
     const upsertedCredential = await Credential.findOneAndUpdate(
       { credentialId },
@@ -240,7 +267,12 @@ router.post("/credential/store", async (req, res, next) => {
         credentialHash,
         metadata: extendedMetadata,
         status: "active",
-        blockchain: { txHash, type: "credential_store", timestamp: transactionTimestamp, pending: true },
+        blockchain: {
+          txHash,
+          type: "credential_store",
+          timestamp: transactionTimestamp,
+          pending: true,
+        },
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).lean();
@@ -256,15 +288,21 @@ router.post("/credential/store", async (req, res, next) => {
   }
 });
 
-router.get("/credential/verify/:credentialId/:ownerAddress", (req, res, next) => {
-  try {
-    const { credentialId, ownerAddress } = req.params;
-    const result = blockchainService.verifyCredential(credentialId, ownerAddress);
-    res.json(result);
-  } catch (error) {
-    next(error);
+router.get(
+  "/credential/verify/:credentialId/:ownerAddress",
+  (req, res, next) => {
+    try {
+      const { credentialId, ownerAddress } = req.params;
+      const result = blockchainService.verifyCredential(
+        credentialId,
+        ownerAddress
+      );
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.post("/credential/share", async (req, res, next) => {
   try {
@@ -280,14 +318,30 @@ router.post("/credential/share", async (req, res, next) => {
     } = req.body;
 
     if (!credentialId || !fromAddress || !toAddress) {
-      return badRequest(res, "credentialId, fromAddress, and toAddress are required");
+      return badRequest(
+        res,
+        "credentialId, fromAddress, and toAddress are required"
+      );
     }
-    if (!/^04[0-9a-fA-F]{128}$/.test(fromAddress) || !/^04[0-9a-fA-F]{128}$/.test(toAddress)) {
-      return badRequest(res, "fromAddress and toAddress must be uncompressed secp256k1 public key hex");
+    if (
+      !/^04[0-9a-fA-F]{128}$/.test(fromAddress) ||
+      !/^04[0-9a-fA-F]{128}$/.test(toAddress)
+    ) {
+      return badRequest(
+        res,
+        "fromAddress and toAddress must be uncompressed secp256k1 public key hex"
+      );
     }
 
-    if (!transactionSignature || !transactionTimestamp || typeof nonce === 'undefined') {
-      return badRequest(res, "transactionSignature, transactionTimestamp and nonce are required");
+    if (
+      !transactionSignature ||
+      !transactionTimestamp ||
+      typeof nonce === "undefined"
+    ) {
+      return badRequest(
+        res,
+        "transactionSignature, transactionTimestamp and nonce are required"
+      );
     }
 
     const orgVerified = blockchainService.isOrganizationVerified(toAddress);
@@ -320,7 +374,9 @@ router.post("/credential/share", async (req, res, next) => {
       credentialId,
       fromAddress,
       toAddress,
-      expiryTime: new Date(Date.now() + (Number(expiryHours) || 24) * 3600 * 1000),
+      expiryTime: new Date(
+        Date.now() + (Number(expiryHours) || 24) * 3600 * 1000
+      ),
       status: "active",
     });
 
@@ -356,31 +412,34 @@ router.get("/credential/share/:shareId", async (req, res, next) => {
   }
 });
 
-router.get("/credential/share/:shareId/:requestingAddress", async (req, res, next) => {
-  try {
-    const { shareId, requestingAddress } = req.params;
-    await markExpiredShares();
+router.get(
+  "/credential/share/:shareId/:requestingAddress",
+  async (req, res, next) => {
+    try {
+      const { shareId, requestingAddress } = req.params;
+      await markExpiredShares();
 
-    const chainResult = blockchainService.verifyShareAccess(
-      shareId,
-      requestingAddress
-    );
-    const shareRecord = await CredentialShare.findOne({ shareId }).lean();
+      const chainResult = blockchainService.verifyShareAccess(
+        shareId,
+        requestingAddress
+      );
+      const shareRecord = await CredentialShare.findOne({ shareId }).lean();
 
-    const response = {
-      ...chainResult,
-      share: shareRecord,
-    };
+      const response = {
+        ...chainResult,
+        share: shareRecord,
+      };
 
-    if (!chainResult.valid && shareRecord) {
-      response.reason = chainResult.reason || shareRecord.status;
+      if (!chainResult.valid && shareRecord) {
+        response.reason = chainResult.reason || shareRecord.status;
+      }
+
+      res.json(response);
+    } catch (error) {
+      next(error);
     }
-
-    res.json(response);
-  } catch (error) {
-    next(error);
   }
-});
+);
 
 router.get("/credential/shares/:address", async (req, res, next) => {
   try {
@@ -388,7 +447,10 @@ router.get("/credential/shares/:address", async (req, res, next) => {
     await markExpiredShares();
 
     if (!/^04[0-9a-fA-F]{128}$/.test(address)) {
-      return badRequest(res, "address must be uncompressed secp256k1 public key hex");
+      return badRequest(
+        res,
+        "address must be uncompressed secp256k1 public key hex"
+      );
     }
 
     const chainShares = blockchainService.getSharesForAddress(address);
@@ -410,15 +472,28 @@ router.get("/credential/shares/:address", async (req, res, next) => {
 
 router.post("/credential/revoke", async (req, res, next) => {
   try {
-    const { credentialId, ownerAddress, transactionSignature, transactionTimestamp, nonce, fee = 0 } =
-      req.body;
+    const {
+      credentialId,
+      ownerAddress,
+      transactionSignature,
+      transactionTimestamp,
+      nonce,
+      fee = 0,
+    } = req.body;
 
     if (!credentialId || !ownerAddress) {
       return badRequest(res, "credentialId and ownerAddress are required");
     }
 
-    if (!transactionSignature || !transactionTimestamp || typeof nonce === 'undefined') {
-      return badRequest(res, "transactionSignature, transactionTimestamp and nonce are required");
+    if (
+      !transactionSignature ||
+      !transactionTimestamp ||
+      typeof nonce === "undefined"
+    ) {
+      return badRequest(
+        res,
+        "transactionSignature, transactionTimestamp and nonce are required"
+      );
     }
 
     blockchainService.revokeCredential(credentialId, ownerAddress);
@@ -444,7 +519,14 @@ router.post("/credential/revoke", async (req, res, next) => {
 
     const credentialRecord = await Credential.findOneAndUpdate(
       { credentialId, ownerAddress },
-      { status: "revoked", blockchain: { txHash, type: "credential_revoke", timestamp: transactionTimestamp } },
+      {
+        status: "revoked",
+        blockchain: {
+          txHash,
+          type: "credential_revoke",
+          timestamp: transactionTimestamp,
+        },
+      },
       { new: true }
     ).lean();
 
@@ -453,7 +535,11 @@ router.post("/credential/revoke", async (req, res, next) => {
       { status: "revoked" }
     );
 
-    res.json({ message: "Credential revoked successfully", txHash, record: credentialRecord });
+    res.json({
+      message: "Credential revoked successfully",
+      txHash,
+      record: credentialRecord,
+    });
   } catch (error) {
     next(error);
   }
@@ -466,7 +552,10 @@ router.get("/credentials", async (req, res, next) => {
 
     if (ownerAddress) {
       if (typeof ownerAddress !== "string" || !ownerAddress.trim()) {
-        return badRequest(res, "ownerAddress must be a non-empty string when provided");
+        return badRequest(
+          res,
+          "ownerAddress must be a non-empty string when provided"
+        );
       }
       query.ownerAddress = ownerAddress.trim();
     }
@@ -474,7 +563,10 @@ router.get("/credentials", async (req, res, next) => {
     if (status) {
       const allowedStatuses = ["active", "revoked"];
       if (!allowedStatuses.includes(status)) {
-        return badRequest(res, "status must be one of active or revoked when provided");
+        return badRequest(
+          res,
+          "status must be one of active or revoked when provided"
+        );
       }
       query.status = status;
     }
@@ -493,7 +585,9 @@ router.get("/credentials", async (req, res, next) => {
     };
 
     if (query.ownerAddress) {
-      response.chainCredentials = blockchainService.getCredentialsByOwner(query.ownerAddress);
+      response.chainCredentials = blockchainService.getCredentialsByOwner(
+        query.ownerAddress
+      );
     }
 
     res.json(response);
@@ -505,7 +599,8 @@ router.get("/credentials", async (req, res, next) => {
 router.get("/credentials/:ownerAddress", async (req, res, next) => {
   try {
     const { ownerAddress } = req.params;
-    const chainCredentials = blockchainService.getCredentialsByOwner(ownerAddress);
+    const chainCredentials =
+      blockchainService.getCredentialsByOwner(ownerAddress);
     const credentialRecords = await Credential.find({ ownerAddress })
       .sort({ createdAt: -1 })
       .lean();
@@ -534,7 +629,9 @@ router.post("/organization/verify", adminOnly, async (req, res, next) => {
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).lean();
 
-    res.status(201).json({ message: "Organization verified successfully", organization });
+    res
+      .status(201)
+      .json({ message: "Organization verified successfully", organization });
   } catch (error) {
     next(error);
   }
@@ -573,10 +670,15 @@ router.get("/organization/verify/:orgAddress", async (req, res, next) => {
   try {
     const { orgAddress } = req.params;
     if (!/^04[0-9a-fA-F]{128}$/.test(orgAddress)) {
-      return badRequest(res, "orgAddress must be uncompressed secp256k1 public key hex");
+      return badRequest(
+        res,
+        "orgAddress must be uncompressed secp256k1 public key hex"
+      );
     }
     const isVerified = blockchainService.isOrganizationVerified(orgAddress);
-    const organization = await Organization.findOne({ address: orgAddress }).lean();
+    const organization = await Organization.findOne({
+      address: orgAddress,
+    }).lean();
     res.json({ orgAddress, verified: isVerified, organization });
   } catch (error) {
     next(error);
@@ -600,8 +702,6 @@ router.get("/audit/:address", async (req, res, next) => {
   }
 });
 
-const { adminOnly } = require("../middleware/roles");
-
 router.post("/nodes/register", adminOnly, (req, res, next) => {
   try {
     const { nodes } = req.body;
@@ -623,7 +723,10 @@ router.get("/nodes", (req, res) => {
 
 router.get("/consensus", (req, res) => {
   const valid = blockchainService.resolveConflicts();
-  res.json({ message: valid ? "Consensus resolved" : "No conflicts found", valid });
+  res.json({
+    message: valid ? "Consensus resolved" : "No conflicts found",
+    valid,
+  });
 });
 
 router.get("/address/:address/balance", (req, res, next) => {
@@ -633,7 +736,10 @@ router.get("/address/:address/balance", (req, res, next) => {
       return badRequest(res, "Address is required");
     }
     if (!/^04[0-9a-fA-F]{128}$/.test(address.trim())) {
-      return badRequest(res, "address must be uncompressed secp256k1 public key hex");
+      return badRequest(
+        res,
+        "address must be uncompressed secp256k1 public key hex"
+      );
     }
 
     const balance = blockchainService.getBalance(address.trim());
