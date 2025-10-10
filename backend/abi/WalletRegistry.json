@@ -1,0 +1,10 @@
+{
+  "abi": [
+    {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
+    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"pubKeyHash","type":"bytes32"},{"indexed":true,"internalType":"address","name":"owner","type":"address"}],"name":"Bound","type":"event"},
+    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"pubKeyHash","type":"bytes32"},{"indexed":true,"internalType":"address","name":"owner","type":"address"}],"name":"Unbound","type":"event"},
+    {"inputs":[{"internalType":"bytes","name":"pubKeyHex","type":"bytes"}],"name":"bind","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"internalType":"bytes","name":"pubKeyHex","type":"bytes"}],"name":"unbind","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"internalType":"bytes32","name":"pubKeyHash","type":"bytes32"}],"name":"resolve","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+  ]
+}

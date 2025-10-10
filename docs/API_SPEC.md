@@ -73,3 +73,15 @@ Environment
 - CORS_ORIGIN
 
 See backend/docs/postman/verishare-backend.postman_collection.json for full examples.
+
+## EVM (Ethereum) Endpoints
+- GET  /api/evm/org/verified/:address → check verification
+- POST /api/evm/org/verify (admin) → mint VerifiedIssuerNFT to org address
+- POST /api/evm/credential/issue → direct issue (subject, hashHex, uri[, contentHashBytes])
+- POST /api/evm/credential/issueBySig → relayed issue (issuer, subject, hashHex, uri, deadline, v, r, s)
+- POST /api/evm/credential/revoke → revoke credential by id
+- POST /api/evm/share/grant → direct grant (credentialId, org, expiresAt)
+- POST /api/evm/share/grantBySig → relayed grant (subject, credentialId, org, expiresAt, deadline, v, r, s)
+- POST /api/evm/share/revoke → revoke shareId
+- POST /api/evm/consent/log → direct consent (org, credentialId, scopeHashHex, approved)
+- POST /api/evm/consent/logBySig → relayed consent (subject, org, credentialId, scopeHashHex, approved, deadline, v, r, s)

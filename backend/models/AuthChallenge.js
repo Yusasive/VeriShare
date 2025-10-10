@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const mongoose = require("mongoose");
+
 const AuthChallengeSchema = new mongoose.Schema(
   {
     wallet: {

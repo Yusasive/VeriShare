@@ -1,0 +1,8 @@
+{
+  "abi": [
+    {"inputs":[{"internalType":"address","name":"verifierAddr","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
+    {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"subject","type":"address"},{"indexed":true,"internalType":"address","name":"org","type":"address"},{"indexed":true,"internalType":"uint256","name":"credentialId","type":"uint256"},{"indexed":false,"internalType":"bytes32","name":"scopeHash","type":"bytes32"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ConsentLogged","type":"event"},
+    {"inputs":[{"internalType":"address","name":"org","type":"address"},{"internalType":"uint256","name":"credentialId","type":"uint256"},{"internalType":"bytes32","name":"scopeHash","type":"bytes32"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"logConsent","outputs":[],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"internalType":"address","name":"subject","type":"address"},{"internalType":"address","name":"org","type":"address"},{"internalType":"uint256","name":"credentialId","type":"uint256"},{"internalType":"bytes32","name":"scopeHash","type":"bytes32"},{"internalType":"bool","name":"approved","type":"bool"},{"internalType":"uint256","name":"deadline","type":"uint256"},{"internalType":"uint8","name":"v","type":"uint8"},{"internalType":"bytes32","name":"r","type":"bytes32"},{"internalType":"bytes32","name":"s","type":"bytes32"}],"name":"logConsentBySig","outputs":[],"stateMutability":"nonpayable","type":"function"}
+  ]
+}

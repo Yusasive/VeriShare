@@ -1,4 +1,5 @@
 const express = require("express");
+const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -66,6 +67,7 @@ const authRoutes = require("./routes/auth");
 const consentRoutes = require("./routes/consent");
 const complianceRoutes = require("./routes/compliance");
 const organizationRoutes = require("./routes/organization");
+const evmRoutes = require("./routes/evm");
 
 app.get("/", (req, res) => {
   res.json({ message: "VeriShare Backend API is running" });
@@ -89,6 +91,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/consent", consentRoutes);
 app.use("/api/compliance", complianceRoutes);
 app.use("/api/organization", organizationRoutes);
+app.use("/api/evm", evmRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

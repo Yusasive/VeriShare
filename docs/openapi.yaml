@@ -42,6 +42,70 @@ paths:
       summary: Review org application (admin)
       responses:
         '200': { description: Reviewed }
+  /api/evm/credential/issueBySig:
+    post:
+      summary: Relayed credential issue using EIP-712 signature
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [issuer, subject, hashHex, uri, deadline, v, r, s]
+              properties:
+                issuer: { type: string, description: Issuer EOA }
+                subject: { type: string }
+                hashHex: { type: string, description: bytes32 hex }
+                uri: { type: string }
+                deadline: { type: integer }
+                v: { type: integer }
+                r: { type: string }
+                s: { type: string }
+      responses:
+        '200': { description: Issued }
+  /api/evm/share/grantBySig:
+    post:
+      summary: Relayed share grant using EIP-712 signature
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subject, credentialId, org, expiresAt, deadline, v, r, s]
+              properties:
+                subject: { type: string }
+                credentialId: { type: integer }
+                org: { type: string }
+                expiresAt: { type: integer }
+                deadline: { type: integer }
+                v: { type: integer }
+                r: { type: string }
+                s: { type: string }
+      responses:
+        '200': { description: Granted }
+  /api/evm/consent/logBySig:
+    post:
+      summary: Relayed consent log using EIP-712 signature
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subject, org, credentialId, scopeHashHex, approved, deadline, v, r, s]
+              properties:
+                subject: { type: string }
+                org: { type: string }
+                credentialId: { type: integer }
+                scopeHashHex: { type: string }
+                approved: { type: boolean }
+                deadline: { type: integer }
+                v: { type: integer }
+                r: { type: string }
+                s: { type: string }
+      responses:
+        '200': { description: Logged }
 components:
   securitySchemes:
     bearerAuth:

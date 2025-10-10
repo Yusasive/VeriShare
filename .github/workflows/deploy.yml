@@ -210,7 +210,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "🚀 VeriShare Deployment Status"
+                    "text": " VeriShare Deployment Status"
                   }
                 },
                 {

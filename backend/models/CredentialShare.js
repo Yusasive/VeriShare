@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const mongoose = require("mongoose");
+
 const CredentialShareSchema = new mongoose.Schema(
   {
     shareId: {
