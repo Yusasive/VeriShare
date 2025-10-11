@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-const mongoose = require("mongoose");
-
 const ComplianceReportSchema = new mongoose.Schema(
   {
     reportId: {

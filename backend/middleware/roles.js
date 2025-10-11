@@ -1,5 +1,4 @@
 const auth = require("./auth");
-const auth = require("./auth");
 const config = require("../config/config");
 
 function isAdminAddress(address) {

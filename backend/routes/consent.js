@@ -1,15 +1,18 @@
 const express = require("express");
-const express = require("express");
-const { randomUUID, randomBytes } = require("crypto");
+const { randomUUID, randomBytes, createHash } = require("crypto");
 const ConsentRequest = require("../models/ConsentRequest");
 const CredentialShare = require("../models/CredentialShare");
 const AccessToken = require("../models/AccessToken");
-const blockchainService = require("../services/blockchainService");
+const EvmService = require("../services/evmService");
 const auth = require("../middleware/auth");
 
 const router = express.Router();
 
 const badRequest = (res, message) => res.status(400).json({ error: message });
+
+function getSvc() {
+  return new EvmService();
+}
 
 async function expireOldRequests() {
   await ConsentRequest.updateMany(
@@ -70,15 +73,29 @@ router.post("/decision", async (req, res, next) => {
 
     let share = null;
     if (decision === "approved") {
-      const isVerified = blockchainService.isOrganizationVerified(reqDoc.organizationAddress);
+      const svc = getSvc();
+      const isVerified = await svc.isOrgVerified(reqDoc.organizationAddress);
+      if (!isVerified) {
+        return badRequest(res, "Organization is not verified on-chain");
+      }
       reqDoc.auditTrail.push({ type: "org_verification_checked", at: new Date(), verified: isVerified });
 
-      share = blockchainService.shareCredential(
-        reqDoc.credentialId,
-        ownerAddress,
-        reqDoc.organizationAddress,
-        Math.max(1, Math.ceil((reqDoc.expiresAt.getTime() - Date.now()) / 3600000))
+      const expiresAtSeconds = Math.max(
+        Math.floor(reqDoc.expiresAt.getTime() / 1000),
+        Math.floor(Date.now() / 1000) + 60
       );
+
+      const granted = await svc.grantShare(
+        reqDoc.credentialId,
+        reqDoc.organizationAddress,
+        expiresAtSeconds
+      );
+
+      share = {
+        id: granted.shareId,
+        txHash: granted.txHash,
+        expiresAt: new Date(expiresAtSeconds * 1000),
+      };
 
       await CredentialShare.findOneAndUpdate(
         { shareId: share.id },
@@ -87,14 +104,37 @@ router.post("/decision", async (req, res, next) => {
           credentialId: reqDoc.credentialId,
           fromAddress: ownerAddress,
           toAddress: reqDoc.organizationAddress,
-          expiryTime: new Date(share.expiryTime),
+          expiryTime: share.expiresAt,
           status: "active",
+          blockchain: {
+            txHash: granted.txHash,
+          },
         },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
 
-      if (!isVerified) {
-        reqDoc.reason = reqDoc.reason || "Organization not verified at time of approval";
+      try {
+        const scopeHashHex = `0x${createHash("sha256")
+          .update(JSON.stringify(reqDoc.requestedData || []))
+          .digest("hex")}`;
+        await svc.logConsent(
+          reqDoc.organizationAddress,
+          reqDoc.credentialId,
+          scopeHashHex,
+          true
+        );
+        reqDoc.auditTrail.push({
+          type: "consent_logged",
+          at: new Date(),
+          txHash: granted.txHash,
+          scopeHashHex,
+        });
+      } catch (logErr) {
+        reqDoc.auditTrail.push({
+          type: "consent_log_failed",
+          at: new Date(),
+          error: logErr.message,
+        });
       }
     }
 

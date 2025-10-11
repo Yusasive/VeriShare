@@ -1,4 +1,3 @@
-const CredentialShare = require("../models/CredentialShare");
 const ConsentRequest = require("../models/ConsentRequest");
 
 function startSchedulers() {

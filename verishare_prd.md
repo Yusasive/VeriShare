@@ -1,95 +1,81 @@
-# VeriShare - Secure Personal Data Exchange Platform (Powered by BlockDAG)
+# VeriShare - Secure Personal Data Exchange Platform (EVM)
 
 ## 1. Overview
-**VeriShare** is a decentralized platform that enables secure, verifiable, and user-controlled data sharing using the **BlockDAG chain**. It allows users—starting with students—to store their credentials on-chain and share them securely with verified organizations via QR codes or access tokens. VeriShare aligns with **NIST** and **ISO cybersecurity standards**, ensuring data protection, integrity, and consent-based access.
+**VeriShare** is a decentralized platform that enables secure, verifiable, and user-controlled data sharing on EVM-compatible blockchains (Ethereum mainnet/testnets or EVM L2s). Individuals store credential proofs on-chain and share them with verified organizations via QR codes or access tokens. VeriShare aligns with NIST and ISO cybersecurity standards to ensure confidentiality, integrity, and consent-driven access.
 
 ---
 
 ## 2. Goals & Objectives
 ### Primary Goal
-To create a **secure, NIST/ISO-compliant data transfer platform** that allows individuals to own, manage, and share their digital credentials without compromising privacy or authenticity.
+Create a secure, NIST/ISO-compliant data transfer platform where users own, manage, and share digital credentials without compromising privacy or authenticity.
 
 ### Objectives
-- Enable self-sovereign identity (SSI) using BlockDAG.
-- Provide fine-grained consent for data sharing (QR/code-based verification).
-- Implement institutional verification for trusted data requests.
-- Ensure full audit trails of all transactions and shares.
-- Maintain full data encryption at rest, in transit, and on-chain.
+- Enable self-sovereign identity (SSI) using EVM smart contracts.
+- Provide fine-grained, consent-based data sharing (QR/token).
+- Onboard/verify institutions on-chain for trusted requests.
+- Maintain full audit trails via EVM events and off-chain logs.
+- Ensure encryption at rest, in transit, and on-chain metadata integrity.
 
 ---
 
 ## 3. Target Audience
-1. **Students** – To store and share academic and identity credentials.
-2. **Institutions** – To request verified data securely.
-3. **Developers** – To integrate VeriShare verification in forms and portals.
-4. **Government Agencies / Employers** – To validate user credentials with trust and compliance.
+1. Students – Store/share academic and identity credentials.
+2. Institutions – Request verified data securely.
+3. Developers – Integrate VeriShare verification into portals.
+4. Government/Employers – Validate credentials with trust.
 
 ---
 
 ## 4. Product Features
 
 ### 4.1 Home Page
-- Overview of the platform.
-- Quick actions: Create Wallet, Login, Learn More.
-- Basic statistics on verified institutions and users.
+- Overview, quick actions (Create Wallet, Login, Learn More), basic statistics.
 
 ### 4.2 Verification Screen
-- QR code scanner and code input field.
-- Displays the requesting organization’s name and verification status.
-- Shows list of data requested for sharing.
-- User can approve or deny access.
-- On approval, data is shared via end-to-end encryption.
+- QR scanner + token input.
+- Shows requesting organization + on-chain verification status.
+- Displays requested data scope; user approves/denies.
+- On approval, encrypted data is shared; on-chain consent event is logged.
 
 ### 4.3 Wallet Screen (Manage Credentials)
-- Categories: Students, Government Workers, etc. (initial focus on **Students**).
-- Fields for student data: Full name, Email, NIN, BVN, DOB, Institution, Level, Department, etc.
-- Ability to add, edit, or remove credentials.
-- Credentials encrypted locally before storage on-chain.
+- Initially focused on students (name, email, NIN/BVN, DOB, institution, level, department, etc.).
+- Add/edit/revoke credentials.
+- Client-side encryption; on-chain stores credential hashes/metadata.
 
 ### 4.4 History Screen (Audit Trail)
-- Displays a chronological list of all data share events.
-- Includes timestamps, organization name, type of data shared, and transaction hash.
-- Data fetched directly from on-chain audit logs.
+- Chronological list of share/consent events.
+- Timestamps, org name, data scope hash, transaction hash.
+- Data sourced from EVM events (e.g., ConsentAudit) and backend logs.
 
 ### 4.5 Settings Screen
-- Manage security preferences:
-  - Biometric setup
-  - Multi-Factor Authentication (MFA)
-  - Change PIN
-  - Session timeout settings
-- Manage connected wallets and devices.
+- Biometric/MFA, PIN, session timeout, connected wallets/devices.
 
-### 4.6 Developer Portal (For Verified Institutions)
-- Register and request API/SDK access.
-- Generate QR codes and tokens for data requests.
-- View organization verification status.
-- Manage public key and certificate.
+### 4.6 Developer Portal (Verified Institutions)
+- Register, request API access, generate QR codes/tokens.
+- View verification status and manage public keys/certificates.
 
 ---
 
 ## 5. User Flow
 
-1. **User Registration**
-   - User signs up → generates **Public/Private key pair**.
-   - Keys stored locally; public key recorded on-chain.
-   - Optionally secure with biometrics or PIN.
+1. Registration
+   - User generates EC keypair; public key associated with wallet.
+   - Private key remains local; public key/address is referenced by backend and optionally bound on-chain.
 
-2. **Upload Credentials**
-   - User fills out credential form (e.g., student info).
-   - Data encrypted locally with AES-256 derived from user’s private key.
-   - Encrypted data pushed to BlockDAG.
+2. Upload Credentials
+   - Data encrypted client-side (AES-256).
+   - Content hash + metadata stored via smart contracts (e.g., CredentialRegistry).
+   - Encrypted blobs stored on IPFS; URIs may be anchored in events/metadata.
 
-3. **Data Request (Verification)**
-   - Organization creates a form integrated with VeriShare SDK.
-   - A QR code or access token is generated.
-   - User scans QR / inputs token on the app.
-   - App fetches organization details + requested data.
-   - User reviews and grants/denies access.
-   - Smart contract logs event with timestamp and consent status.
+3. Data Request (Verification)
+   - Organization integrates VeriShare SDK and issues a QR/token.
+   - App fetches org details + requested data scope.
+   - User reviews and approves/denies.
+   - On approval, backend grants share via smart contract (grantShare) and logs consent (ConsentAudit).
 
-4. **History / Audit Trail**
-   - User can review all approved or denied requests.
-   - Organizations can view proof of data request consent.
+4. History / Audit Trail
+   - User can review approvals/denials and chain tx hashes.
+   - Organizations can show verifiable proof of user consent.
 
 ---
 
@@ -97,98 +83,87 @@ To create a **secure, NIST/ISO-compliant data transfer platform** that allows in
 
 ### 6.1 Components
 | Component | Description |
-|------------|-------------|
-| **Frontend** | Built with Flutter/React Native (mobile) or Next.js (web). |
-| **Backend** | Node.js + Express for API + Daml smart contracts on BlockDAG. |
-| **Blockchain Layer** | BlockDAG chain for decentralized data integrity. |
-| **Storage** | IPFS for off-chain encrypted data, blockchain stores metadata hashes. |
-| **Crypto Layer** | WebCrypto API / Ethers.js for key management and encryption. |
-| **Verification Service** | Handles organization onboarding and trust verification. |
+| --- | --- |
+| Frontend | Next.js (web portal) and Flutter (mobile) UIs. |
+| Backend | Node.js + Express REST API; integrates with EVM (ethers.js). |
+| Smart Contracts | Solidity contracts on EVM (CredentialRegistry, VerifiedIssuerNFT, ConsentAudit, WalletRegistry). |
+| Storage | IPFS for encrypted blobs; chain stores hashes/metadata. |
+| Crypto Layer | Ethers.js / WebCrypto for key management and encryption. |
+| Verification Service | On-chain org verification via VerifiedIssuerNFT. |
 
 ### 6.2 Security Model
-- **At Rest:** AES-256 encryption using user private key.
-- **In Transit:** E2EE during credential transfers.
-- **On Chain:** Only metadata (hash + signature) stored.
-- **Access Control:** Only whitelisted wallets approved by user can decrypt data.
-- **Compliance:** Aligned with **NIST SP 800-63** and **ISO/IEC 27001** standards.
+- At Rest: AES-256 encryption using keys derived client-side.
+- In Transit: E2EE for transfers where applicable.
+- On Chain: Only hashes/metadata; consent and share events logged.
+- Access Control: Shares granted to whitelisted org addresses on-chain.
+- Compliance: Aligns with NIST SP 800-63 and ISO/IEC 27001.
 
 ---
 
 ## 7. Organization Verification System
 
-### 7.1 Verification Steps
-1. **Organization Registration:**
-   - Institution submits details on Developer Portal.
-2. **Verification Methods:**
-   - **DNS Record Verification** – Add a TXT record for domain ownership.
-   - **Email Verification** – Must use `.edu.ng`, `.gov.ng`, or official domain.
-   - **Document Verification** – Upload CAC certificate or institutional ID.
-3. **Blockchain Certificate:**
-   - On successful verification, the organization is issued a **Verified Issuer NFT**.
-4. **In-App Validation:**
-   - When user scans QR / enters token, app checks if requester wallet holds Verified Issuer NFT.
-   - Displays either:
-     - ✅ Verified Organization
-     - ⚠️ Unverified Source
+1. Organization Registration
+   - Institution submits details (domain, docs) via portal.
+2. Verification Methods
+   - DNS TXT, domain email, document verification.
+3. On-Chain Certificate
+   - VerifiedIssuerNFT minted to approved org address.
+4. In-App Validation
+   - App checks VerifiedIssuerNFT ownership for requestor address.
+   - Displays: Verified Organization or Unverified Source.
 
 ---
 
 ## 8. Compliance & Security Standards
 | Standard | Description |
-|-----------|-------------|
-| **NIST SP 800-63** | Digital Identity Guidelines for authentication and lifecycle management. |
-| **ISO/IEC 27001** | Information Security Management Systems (ISMS). |
-| **ISO/IEC 27701** | Privacy Information Management. |
-| **GDPR Principles** | Data minimization, user consent, and portability. |
+| --- | --- |
+| NIST SP 800-63 | Digital Identity Guidelines. |
+| ISO/IEC 27001 | ISMS controls and governance. |
+| ISO/IEC 27701 | Privacy information management. |
+| GDPR Principles | Data minimization, consent, portability. |
 
 ---
 
 ## 9. Tech Stack Summary
 | Layer | Tools/Tech |
-|--------|-------------|
-| **Frontend** | Flutter / React Native / Next.js |
-| **Backend** | Node.js + Express |
-| **Blockchain** | BlockDAG Chain |
-| **Storage** | IPFS (Encrypted blobs) |
-| **Smart Contracts** | Daml or Solidity-like implementation for DAG chain |
-| **Cryptography** | AES-256, SHA-256, RSA/ECC |
-| **Docs Portal** | Docusaurus / Next.js + Markdown-based API docs |
+| --- | --- |
+| Frontend | Flutter / Next.js |
+| Backend | Node.js + Express |
+| Smart Contracts | Solidity on EVM, ethers.js integration |
+| Storage | IPFS (encrypted blobs) |
+| Cryptography | AES-256, SHA-256/3, ECC (secp256k1) |
+| SDK/Docs | REST API + OpenAPI docs |
 
 ---
 
 ## 10. Future Roadmap
-- Expand beyond student data → government, healthcare, and employment sectors.
-- Introduce **VeriShare ID NFT** as reusable identity proof.
-- Integration with national ID frameworks.
-- Build AI-based fraud detection for fake credential uploads.
-- Launch open developer SDK with sandbox environment.
+- Extend domains beyond education (gov, healthcare, employment).
+- Introduce reusable VeriShare ID NFT.
+- National ID framework integrations.
+- Fraud detection for fake credentials.
+- Open developer SDKs with sandbox.
 
 ---
 
-## 11. Key Performance Metrics (KPIs)
-- **User Adoption Rate** – # of wallets created.
-- **Verification Success Rate** – % of approved vs denied data requests.
-- **Transaction Speed** – Avg time for credential transfer.
-- **Data Integrity Score** – On-chain validation consistency.
-- **Partner Verification Rate** – # of verified organizations onboarded.
+## 11. KPIs
+- Wallets created; verification success rate; tx throughput and latency; on-chain validation consistency; verified orgs onboarded.
 
 ---
 
-## 12. Hackathon Pitch Summary
-**Problem:** Manual verification processes are repetitive, insecure, and prone to data leaks.
+## 12. Pitch Summary
+Problem: Manual verification is repetitive, insecure, and error-prone.
 
-**Solution:** VeriShare — a decentralized platform enabling encrypted, consent-based, and NIST-compliant data sharing via BlockDAG.
+Solution: VeriShare — encrypted, consent-based sharing with on-chain auditability on EVM.
 
-**Why It Stands Out:**
-- User owns and controls data.
-- Encrypted at all stages.
-- Real-time verification via QR or token.
-- Verifiable trust through blockchain-issued organization certificates.
+Why It Stands Out:
+- User-owned data; encryption at all stages.
+- Real-time verification via QR/token.
+- Verifiable trust through on-chain org certificates.
 
-**Impact:** Simplifies credential verification for millions while ensuring top-tier data security.
+Impact: Streamlines verification for millions with strong security guarantees.
 
 ---
 
-**Document Version:** 1.0  
-**Date:** October 2025  
-**Author:** Yusasive
+Document Version: 2.0 (EVM)
+Date: October 2025
+Author: Yusasive

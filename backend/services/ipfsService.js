@@ -1,27 +1,61 @@
+// backend/services/ipfsService.js
 const axios = require("axios");
+const FormData = require("form-data");
+require("dotenv").config();
 
-const IPFS_API_URL = process.env.IPFS_API_URL || "";
-const IPFS_API_KEY = process.env.IPFS_API_KEY || "";
+const PINATA_JWT = process.env.PINATA_JWT;
 
-async function addBuffer(buffer) {
-  if (!IPFS_API_URL) {
-    throw new Error("IPFS_API_URL not configured");
+if (!PINATA_JWT) {
+  throw new Error("❌ Missing PINATA_JWT in your .env file");
+}
+
+async function addBuffer(buffer, name = "file") {
+  const formData = new FormData();
+  formData.append("file", buffer, name);
+
+  try {
+    const res = await axios.post(
+      "https://api.pinata.cloud/pinning/pinFileToIPFS",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${PINATA_JWT}`,
+          ...formData.getHeaders(),
+        },
+        maxBodyLength: Infinity,
+      }
+    );
+
+    return res.data.IpfsHash;
+  } catch (error) {
+    console.error(
+      "❌ Pinata upload error:",
+      error.response?.data || error.message
+    );
+    throw error;
   }
-  const res = await axios.post(`${IPFS_API_URL}/api/v0/add`, buffer, {
-    headers: {
-      "Content-Type": "application/octet-stream",
-      ...(IPFS_API_KEY ? { Authorization: `Bearer ${IPFS_API_KEY}` } : {}),
-    },
-    maxBodyLength: Infinity,
-  });
-  const lines = res.data.toString().trim().split("\n");
-  const last = JSON.parse(lines[lines.length - 1]);
-  return last.Hash;
 }
 
 async function addJSON(obj) {
-  const data = Buffer.from(JSON.stringify(obj));
-  return addBuffer(data);
+  try {
+    const res = await axios.post(
+      "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+      obj,
+      {
+        headers: {
+          Authorization: `Bearer ${PINATA_JWT}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return res.data.IpfsHash;
+  } catch (error) {
+    console.error(
+      "❌ Pinata JSON upload error:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
 }
 
 module.exports = { addBuffer, addJSON };

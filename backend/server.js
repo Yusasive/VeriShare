@@ -1,5 +1,4 @@
 const express = require("express");
-const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -62,7 +61,6 @@ mongoose.connection.on("error", (error) => {
   console.error("MongoDB error:", error.message);
 });
 
-const blockchainRoutes = require("./routes/blockchain");
 const authRoutes = require("./routes/auth");
 const consentRoutes = require("./routes/consent");
 const complianceRoutes = require("./routes/compliance");
@@ -80,13 +78,26 @@ app.get("/health", (req, res) => {
 try {
   const swaggerUi = require("swagger-ui-express");
   const YAML = require("yamljs");
-  const openapi = YAML.load(require("path").resolve("docs/openapi.yaml"));
-  app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapi));
+  const path = require("path");
+  const candidates = [
+    path.resolve(__dirname, "../docs/openapi.yaml"),
+    path.resolve("docs/openapi.yaml"),
+    path.resolve(__dirname, "docs/openapi.yaml"),
+  ];
+  let openapi;
+  for (const p of candidates) {
+    try {
+      openapi = YAML.load(p);
+      break;
+    } catch {}
+  }
+  if (openapi) {
+    app.use("/docs", swaggerUi.serve, swaggerUi.setup(openapi));
+  }
 } catch (_) {
   // ignore if dependencies not installed
 }
 
-app.use("/api/blockchain", blockchainRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/consent", consentRoutes);
 app.use("/api/compliance", complianceRoutes);
@@ -105,6 +116,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = Number(process.env.PORT) || 5000;
+let server;
 
 const startServer = async () => {
   await connectDB();
@@ -114,13 +126,38 @@ const startServer = async () => {
     startSchedulers();
   } catch (_) {}
 
-  app.listen(PORT, () => {
+  server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
+  return server;
 };
 
 if (process.env.NODE_ENV !== "test") {
   startServer();
 }
+
+const shutdown = async (signal) => {
+  try {
+    console.log(`${signal} received, shutting down`);
+    if (server) {
+      await new Promise((resolve) => server.close(resolve));
+    }
+    await mongoose.connection.close(false);
+  } catch (err) {
+    console.error("Error during shutdown", err);
+  } finally {
+    process.exit(0);
+  }
+};
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception", err);
+  shutdown("uncaughtException");
+});
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection", reason);
+  shutdown("unhandledRejection");
+});
 
 module.exports = { app, connectDB, startServer };

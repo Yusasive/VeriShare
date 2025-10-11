@@ -1,12 +1,15 @@
 const express = require("express");
-const express = require("express");
 const Organization = require("../models/Organization");
 const { adminOnly } = require("../middleware/roles");
 const auth = require("../middleware/auth");
-const blockchainService = require("../services/blockchainService");
+const EvmService = require("../services/evmService");
 
 const router = express.Router();
 const badRequest = (res, message) => res.status(400).json({ error: message });
+
+function getSvc() {
+  return new EvmService();
+}
 
 // Organization submits verification application
 router.post("/apply", auth, async (req, res, next) => {
@@ -54,8 +57,8 @@ router.post("/review", adminOnly, async (req, res, next) => {
     if (!org) return res.status(404).json({ error: "Organization not found" });
 
     if (status === "approved") {
-      // Reflect on-chain certified status
-      blockchainService.verifyOrganization(address);
+      const svc = getSvc();
+      await svc.verifyOrg(address, org.name || "", org.domain || "");
     }
 
     res.json({ message: "Review recorded", organization: org });
@@ -70,7 +73,9 @@ router.get("/:address", async (req, res, next) => {
     const { address } = req.params;
     const org = await Organization.findOne({ address }).lean();
     if (!org) return res.status(404).json({ error: "Not found" });
-    res.json({ organization: org, onChainVerified: blockchainService.isOrganizationVerified(address) });
+    const svc = getSvc();
+    const onChainVerified = await svc.isOrgVerified(address);
+    res.json({ organization: org, onChainVerified });
   } catch (err) {
     next(err);
   }

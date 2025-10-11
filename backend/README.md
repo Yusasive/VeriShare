@@ -51,10 +51,10 @@ Environment variables:
 EVM (Ethereum/Fantom) integration:
 - EVM_RPC_URL (preferred) or EVM_PRIMORDIAL_RPC_URL or EVM_FANTOM_RPC_URL or EVM_SEPOLIA_RPC_URL: JSON-RPC endpoint
 - EVM_PRIVATE_KEY: Deployer/signer private key (hex with 0x). Must be funded for gas
-- EVM_VERIFIER_ADDRESS: VerifiedIssuerNFT address
-- EVM_WALLETREG_ADDRESS: WalletRegistry address
-- EVM_REGISTRY_ADDRESS: CredentialRegistry address
-- EVM_CONSENT_ADDRESS: ConsentAudit address
+- EVM_VERIFIER_ADDRESS: 0xDe6801F4D96e4cfd1D65f2c210a32362707c6AaB
+- EVM_WALLETREG_ADDRESS: 0x8c7624B7Da5885F8203aF3A89D3f9715B47B1034'
+- EVM_REGISTRY_ADDRESS: 0x23676A8f05199Dc1660188Fa1574FE2308262642
+- EVM_CONSENT_ADDRESS: 0xE72E9EE44a8E098279De1f9213a3Fa2C9e9bCD65
 
 Example .env:
 ```
@@ -80,3 +80,5 @@ See docs/API_SPEC.md for the full list, and interactive docs at /docs when serve
 - Consent requests and the new QR/token flow for verified organizations
 - Organization apply/review endpoints for the developer portal
 - Compliance report (owner-authenticated)
+
+

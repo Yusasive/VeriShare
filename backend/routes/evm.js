@@ -17,7 +17,7 @@ router.get("/org/verified/:address", async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
-router.post("/org/verify", auth, roles(["admin"]), async (req, res) => {
+router.post("/org/verify", auth, roles.adminOnly, async (req, res) => {
   try {
     const { org, name, uri } = req.body;
     const svc = getSvc();

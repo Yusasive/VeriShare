@@ -1,5 +1,4 @@
 const express = require("express");
-const express = require("express");
 const { randomBytes, createHash, randomUUID } = require("crypto");
 const jwt = require("jsonwebtoken");
 const { ec: EC } = require("elliptic");
