@@ -16,7 +16,7 @@ Deployment target: Sepolia (Ethereum testnet)
 
 ## 2) Install and Configure
 ```bash
-cd evm
+cd smart-contract
 npm install
 ```
 Create a .env file in evm/ with one of the following RPC sets:
@@ -69,6 +69,9 @@ This deploys, then verifies:
 - WalletRegistry
 - CredentialRegistry (constructor: owner = deployer, verifier = VerifiedIssuerNFT)
 - ConsentAudit (constructor: verifier = VerifiedIssuerNFT)
+
+$env:NETWORK="awakening"; npx hardhat run scripts/deploy.js --network awakening
+
 
 Copy the printed addresses for all contracts.
 

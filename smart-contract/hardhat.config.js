@@ -1,5 +1,4 @@
 require("dotenv").config();
-require("dotenv").config();
 require("@nomicfoundation/hardhat-toolbox");
 
 const {
@@ -11,50 +10,79 @@ const {
   OPERA_RPC_URL,
   PRIMORDIAL_RPC_URL,
   PRIMORDIAL_CHAIN_ID,
+  AWAKENING_RPC_URL,
+  AWAKENING_CHAIN_ID,
   PRIVATE_KEY,
   ETHERSCAN_API_KEY,
   POLYGONSCAN_API_KEY,
-  FTMSCAN_API_KEY
+  FTMSCAN_API_KEY,
 } = process.env;
 
 module.exports = {
   solidity: {
     version: "0.8.24",
-    settings: { optimizer: { enabled: true, runs: 200 } }
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
   },
+
   networks: {
+    // Ethereum Testnet
     sepolia: {
       url: SEPOLIA_RPC_URL || "",
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
-    amoy: { // Polygon Amoy testnet
+
+    // Polygon Amoy Testnet
+    amoy: {
       url: AMOY_RPC_URL || "",
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+
+    // Polygon Mainnet
     polygon: {
       url: POLYGON_RPC_URL || "",
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+
+    // Ethereum Mainnet
     mainnet: {
       url: MAINNET_RPC_URL || "",
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+
+    // Fantom Testnet
     ftmTestnet: {
       url: FTM_TESTNET_RPC_URL || "",
       chainId: 4002,
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+
+    // Fantom Mainnet
     opera: {
       url: OPERA_RPC_URL || "",
       chainId: 250,
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
+
+    // BlockDAG Primordial (legacy testnet)
     primordial: {
-      url: PRIMORDIAL_RPC_URL || "",
-      chainId: PRIMORDIAL_CHAIN_ID ? Number(PRIMORDIAL_CHAIN_ID) : undefined,
-      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
-    }
+      url: PRIMORDIAL_RPC_URL || "https://rpc.primordial.bdagscan.com",
+      chainId: PRIMORDIAL_CHAIN_ID ? Number(PRIMORDIAL_CHAIN_ID) : 1043,
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
+
+    // BlockDAG Awakening (current testnet)
+    awakening: {
+      url: AWAKENING_RPC_URL || "https://rpc.awakening.bdagscan.com",
+      chainId: AWAKENING_CHAIN_ID ? Number(AWAKENING_CHAIN_ID) : 1043, // placeholder, confirm from docs
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+    },
   },
+
   etherscan: {
     apiKey: {
       mainnet: ETHERSCAN_API_KEY || "",
@@ -62,33 +90,32 @@ module.exports = {
       polygon: POLYGONSCAN_API_KEY || "",
       polygonAmoy: POLYGONSCAN_API_KEY || "",
       ftmTestnet: FTMSCAN_API_KEY || "",
-      opera: FTMSCAN_API_KEY || ""
+      opera: FTMSCAN_API_KEY || "",
+      primordial: "", // no API key needed
+      awakening: "", // awaiting official API
     },
     customChains: [
       {
-        network: "polygonAmoy",
-        chainId: 80002,
+        network: "primordial",
+        chainId: 1043,
         urls: {
-          apiURL: "https://api-amoy.polygonscan.com/api",
-          browserURL: "https://amoy.polygonscan.com"
-        }
+          apiURL: "https://primordial.bdagscan.com/api",
+          browserURL: "https://primordial.bdagscan.com",
+        },
       },
       {
-        network: "ftmTestnet",
-        chainId: 4002,
+        network: "awakening",
+        chainId: AWAKENING_CHAIN_ID ? Number(AWAKENING_CHAIN_ID) : 7999,
         urls: {
-          apiURL: "https://api-testnet.ftmscan.com/api",
-          browserURL: "https://testnet.ftmscan.com"
-        }
+          apiURL: "https://awakening.bdagscan.com/api",
+          browserURL: "https://awakening.bdagscan.com",
+        },
       },
-      {
-        network: "opera",
-        chainId: 250,
-        urls: {
-          apiURL: "https://api.ftmscan.com/api",
-          browserURL: "https://ftmscan.com"
-        }
-      }
-    ]
-  }
+    ],
+  },
+
+
+  sourcify: {
+    enabled: true,
+  },
 };

@@ -81,23 +81,32 @@ contract CredentialRegistry is AccessControl, Pausable, EIP712 {
     function unpause() external onlyRole(PAUSER_ROLE) { _unpause(); }
     function setVerifier(address v) external onlyRole(DEFAULT_ADMIN_ROLE) { verifier = IVerifiedIssuerNFT(v); }
 
-    function issueCredential(
+    function _issueCredentialInternal(
+        address issuer,
         address subject,
         bytes32 hash,
         string calldata uri
-    ) external whenNotPaused returns (uint256 id) {
+    ) internal returns (uint256 id) {
         require(subject != address(0), "invalid subject");
         require(hash != bytes32(0), "invalid hash");
         id = _nextId++;
         _creds[id] = Credential({
-            issuer: msg.sender,
+            issuer: issuer,
             subject: subject,
             hash: hash,
             uri: uri,
             issuedAt: uint64(block.timestamp),
             revoked: false
         });
-        emit CredentialIssued(id, msg.sender, subject, hash, uri);
+        emit CredentialIssued(id, issuer, subject, hash, uri);
+    }
+
+    function issueCredential(
+        address subject,
+        bytes32 hash,
+        string calldata uri
+    ) external whenNotPaused returns (uint256 id) {
+        return _issueCredentialInternal(msg.sender, subject, hash, uri);
     }
 
     function issueCredentialV2(
@@ -106,7 +115,7 @@ contract CredentialRegistry is AccessControl, Pausable, EIP712 {
         string calldata uri,
         bytes calldata contentHash
     ) external whenNotPaused returns (uint256 id) {
-        id = issueCredential(subject, hash, uri);
+        id = _issueCredentialInternal(msg.sender, subject, hash, uri);
         _v2[id] = CredentialV2Data({ contentHash: contentHash });
     }
 
@@ -176,8 +185,6 @@ contract CredentialRegistry is AccessControl, Pausable, EIP712 {
     ) external whenNotPaused returns (uint256 id) {
         require(block.timestamp <= deadline, "expired");
         require(issuer != address(0), "invalid issuer");
-        require(subject != address(0), "invalid subject");
-        require(hash != bytes32(0), "invalid hash");
         uint256 nonce = nonces[issuer]++;
         bytes32 structHash = keccak256(abi.encode(
             ISSUE_TYPEHASH,
@@ -191,16 +198,7 @@ contract CredentialRegistry is AccessControl, Pausable, EIP712 {
         bytes32 digest = _hashTypedDataV4(structHash);
         address signer = ECDSA.recover(digest, v, r, s);
         require(signer == issuer, "invalid sig");
-        id = _nextId++;
-        _creds[id] = Credential({
-            issuer: issuer,
-            subject: subject,
-            hash: hash,
-            uri: uri,
-            issuedAt: uint64(block.timestamp),
-            revoked: false
-        });
-        emit CredentialIssued(id, issuer, subject, hash, uri);
+        return _issueCredentialInternal(issuer, subject, hash, uri);
     }
 
     function grantShareBySig(
