@@ -4,7 +4,7 @@ import { authEvmChallenge, authEvmRegister, authEvmVerify, getJwt, setJwt } from
 
 declare global {
   interface Window {
-    ethereum?: any;
+    ethereum?: unknown;
   }
 }
 

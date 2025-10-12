@@ -165,7 +165,6 @@ export default function WalletLoginPage() {
             {/* @ts-expect-error Server components don't infer client child types */}
             <div>
               {/* Client component */}
-              {/* eslint-disable-next-line @next/next/no-sync-scripts */}
               <ConnectWalletClient />
             </div>
           </section>

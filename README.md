@@ -18,7 +18,7 @@ https://drive.google.com/drive/folders/12iUATaLuoqrvynsxmyT2xLU1-caPc8RmqZfQ4uil
 https://drive.google.com/file/d/1UG9JcerYCnYEh3T-k7wbpspz53OYMn2X/view?usp=drivesdk
 
 ## Frontend URL
-
+https://team-hotel.app.netlify/
 
 
 ## Overview
