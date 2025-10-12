@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/metamask_service.dart';
+// import '../services/metamask_service.dart';
 import 'dart:math';
 import 'app_shell.dart'; // Correct import for AppShell
 
@@ -15,9 +15,10 @@ class _WalletConnectScreenState extends State<WalletConnectScreen>
     with TickerProviderStateMixin {
   String? _error;
   String? walletConnectUri;
+  // MetaMask is not available on mobile
   String? _metaMaskAccount;
   bool _isLoading = false;
-  bool _isMetaMaskAvailable = true;
+  bool _isMetaMaskAvailable = false;
   late AnimationController _bgController;
 
   @override
@@ -27,16 +28,10 @@ class _WalletConnectScreenState extends State<WalletConnectScreen>
       vsync: this,
       duration: const Duration(seconds: 4),
     )..repeat();
-    // Check MetaMask availability
-    Future.microtask(() {
-      final available = MetaMaskService.isAvailable();
-      setState(() {
-        _isMetaMaskAvailable = available;
-        if (!available) {
-          _error =
-              'MetaMask is not available. Please install MetaMask extension.';
-        }
-      });
+    // MetaMask is not available on mobile
+    setState(() {
+      _isMetaMaskAvailable = false;
+      _error = 'MetaMask is only available on web.';
     });
   }
 
@@ -85,84 +80,10 @@ class _WalletConnectScreenState extends State<WalletConnectScreen>
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    _metaMaskAccount == null
-                        ? 'Connect your MetaMask wallet to continue'
-                        : 'Connected: $_metaMaskAccount',
+                    'MetaMask wallet connect is only available on web.',
                     style: const TextStyle(color: Colors.white, fontSize: 18),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 32),
-                  if (_isLoading)
-                    const CircularProgressIndicator(color: Colors.purpleAccent)
-                  else if (_isMetaMaskAvailable)
-                    ElevatedButton(
-                      onPressed:
-                          _metaMaskAccount == null
-                              ? () async {
-                                setState(() {
-                                  _isLoading = true;
-                                  _error = null;
-                                });
-                                final account = await MetaMaskService.connect();
-                                setState(() {
-                                  _metaMaskAccount = account;
-                                  _isLoading = false;
-                                  if (account == null) {
-                                    _error =
-                                        'Failed to connect to MetaMask. Please try again.';
-                                  }
-                                });
-                                if (account != null) {
-                                  // Navigate to AppShell (home screen)
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const AppShell(),
-                                    ),
-                                  );
-                                }
-                              }
-                              : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purpleAccent,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child:
-                          _metaMaskAccount == null
-                              ? const Text(
-                                'Connect MetaMask',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              )
-                              : const Text(
-                                'Connected',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                    )
-                  else
-                    const Text(
-                      'MetaMask is not available. Please install MetaMask extension.',
-                      style: TextStyle(color: Colors.redAccent, fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                  if (_error != null) ...[
-                    const SizedBox(height: 16),
-                    Text(
-                      _error!,
-                      style: const TextStyle(color: Colors.redAccent),
-                    ),
-                  ],
                 ],
               ),
             ),

@@ -12,10 +12,10 @@ https://www.canva.com/design/DAGRMgs75y0/1Pr4rtCfP7B_REcOZWCVIQ/edit?utm_content
 https://verishare-backend.onrender.com/
 
 ## Mobile URL
-
+https://drive.google.com/drive/folders/12iUATaLuoqrvynsxmyT2xLU1-caPc8RmqZfQ4uilai1a_Fv-hw4D2qRziAo2fUMbuqpA8el9?usp=drive_link
 
 ## Demo Video
-
+https://drive.google.com/file/d/1UG9JcerYCnYEh3T-k7wbpspz53OYMn2X/view?usp=drivesdk
 
 ## Frontend URL
 
