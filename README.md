@@ -4,6 +4,23 @@
 
 VeriShare enables organizations to onboard, verify credentials, and manage trust using EVM smart contracts. The platform integrates web and mobile apps with a backend API for end-to-end credential lifecycle management.
 
+
+## Presentation Slide
+https://www.canva.com/design/DAGRMgs75y0/1Pr4rtCfP7B_REcOZWCVIQ/edit?utm_content=DAGRMgs75y0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
+## Backend URL
+https://verishare-backend.onrender.com/
+
+## Mobile URL
+
+
+## Demo Video
+
+
+## Frontend URL
+
+
+
 ## Overview
 
 - Organization Portal – Next.js web admin interface

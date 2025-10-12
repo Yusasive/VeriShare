@@ -47,6 +47,14 @@ const OrganizationSchema = new mongoose.Schema(
     verifiedAt: {
       type: Date,
     },
+    nftTokenId: {
+      type: String,
+      default: "",
+    },
+    nftTokenUri: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

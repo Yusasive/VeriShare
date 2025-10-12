@@ -215,6 +215,7 @@ const String verifyCredentialQuery = r'''
 
 ## Authentication
 
+
 ### User Authentication
 
 - **Email/Password**: Standard authentication

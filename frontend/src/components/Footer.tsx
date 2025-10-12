@@ -4,7 +4,7 @@ export default function Footer() {
       <p>
         © {new Date().getFullYear()} VeriShare — Secure, consent-first data exchange.
       </p>
-      <p className="mt-2 text-xs">Built with Next.js. EVM-powered verification.</p>
+      <p className="mt-2 text-xs">Built with Team Hotel. EVM-powered verification.</p>
     </footer>
   );
 }

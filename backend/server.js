@@ -9,9 +9,11 @@ dotenv.config();
 
 const app = express();
 
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-}));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 300 });
 app.use(limiter);
@@ -43,7 +45,9 @@ mongoose.set("strictQuery", true);
 
 const connectDB = async () => {
   const connectionString =
-    process.env.MONGO_URI || process.env.DATABASE_URL || "mongodb://localhost:27017/verishare";
+    process.env.MONGO_URI ||
+    process.env.DATABASE_URL ||
+    "mongodb://localhost:27017/verishare";
 
   try {
     await mongoose.connect(connectionString, {
@@ -66,6 +70,8 @@ const consentRoutes = require("./routes/consent");
 const complianceRoutes = require("./routes/compliance");
 const organizationRoutes = require("./routes/organization");
 const evmRoutes = require("./routes/evm");
+const evmListRoutes = require("./routes/evm.list");
+const authEvmRoutes = require("./routes/auth-evm");
 
 app.get("/", (req, res) => {
   res.json({ message: "VeriShare Backend API is running" });
@@ -103,6 +109,8 @@ app.use("/api/consent", consentRoutes);
 app.use("/api/compliance", complianceRoutes);
 app.use("/api/organization", organizationRoutes);
 app.use("/api/evm", evmRoutes);
+app.use("/api/evm", evmListRoutes);
+app.use("/api/auth/evm", authEvmRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
