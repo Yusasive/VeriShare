@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-// @ts-expect-error qrcode.react has no default export, but runtime usage is correct
-import QRCode from "qrcode.react";
+
+import { QRCodeCanvas } from "qrcode.react";
 
 interface NftBadgeAndQrProps {
   imageUrl: string;
@@ -28,7 +28,12 @@ export default function NftBadgeAndQr({
         </div>
       </div>
       <div className="mt-2 flex flex-col items-center">
-        <QRCode value={qrValue} size={128} bgColor="#fff" fgColor="#164e63" />
+        <QRCodeCanvas
+          value={qrValue}
+          size={128}
+          bgColor="#fff"
+          fgColor="#164e63"
+        />
         <div className="mt-1 text-xs text-white/70">
           Scan to verify or access registration
         </div>

@@ -16,7 +16,10 @@ import {
 } from "@/lib/api";
 import GradientOrbs from "@/components/GradientOrbs";
 import dynamic from "next/dynamic";
-const ConnectWalletClient = dynamic(() => import("@/components/ConnectWallet"), { ssr: false });
+const ConnectWalletClient = dynamic(
+  () => import("@/components/ConnectWallet"),
+  { ssr: false }
+);
 
 async function aesGcmEncryptHex(
   plainHex: string,
@@ -149,13 +152,16 @@ export default function WalletLoginPage() {
           Wallet Login
         </h1>
         <p className="mt-3 text-white/70">
-          Connect your MetaMask wallet to authenticate. JWT is stored locally for API calls.
+          Connect your MetaMask wallet to authenticate. JWT is stored locally
+          for API calls.
         </p>
 
         <div className="mt-8 grid gap-6">
           <section className="rounded-2xl border border-white/10 bg-white/5 p-6 grid gap-4">
             <h2 className="text-lg font-semibold text-white">MetaMask</h2>
-            <p className="text-sm text-white/70">Connect and sign a one-time challenge to log in.</p>
+            <p className="text-sm text-white/70">
+              Connect and sign a one-time challenge to log in.
+            </p>
             {/* @ts-expect-error Server components don't infer client child types */}
             <div>
               {/* Client component */}

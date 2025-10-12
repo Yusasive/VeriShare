@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 
 const HARDCODED_ACCESS_CODE = "EDU-2025-VERISHARE";
 
@@ -35,10 +36,12 @@ export default function EducationRegisterPage() {
           </button>
           <div className="my-4">
             {/* QR code alternative (for prototype, just show code as QR) */}
-            <img
+            <Image
               src={`https://api.qrserver.com/v1/create-qr-code/?data=${HARDCODED_ACCESS_CODE}&size=120x120`}
               alt="QR Code"
               className="mx-auto mt-4"
+              width={120}
+              height={120}
             />
             <span className="block text-xs text-gray-500 mt-2">
               Scan this code in the mobile app
@@ -56,7 +59,6 @@ export default function EducationRegisterPage() {
                 want to approve or disapprove data release.
               </li>
             </ul>
-            
           </div>
         </div>
       </div>
