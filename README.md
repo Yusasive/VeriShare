@@ -157,7 +157,7 @@ npm run test
 
 ## Deployment
 - Use environment variables to point to production RPC and contract addresses
-- Docker Compose available at project root (docker-compose.yml)
+- Docker Compose available at project root (docker-compose.yml).
 
 ## Troubleshooting
 - Ensure MongoDB is running and MONGO_URI is correct
